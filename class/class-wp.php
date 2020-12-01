@@ -2,8 +2,6 @@
 
 namespace whatwedo\AcfCleaner;
 
-use FineSolutions\Helper\QueryHelper;
-
 /**
  * WP Hooks
  *
@@ -73,9 +71,6 @@ class WP
     public function enqueueAdminAssets()
     {
         if (get_current_screen()->id === 'tools_page_wwd-acf-cleaner') {
-            //wp_enqueue_script('react');
-            //wp_enqueue_script('react-dom');
-
             wp_enqueue_script('vuejs', 'https://unpkg.com/vue@^3/dist/vue.global.prod.js');
             wp_register_script('wwdac-vuejs', WWDACFCLEANER_DIR_URL . 'assets/wwd-acf-cleaner.js', 'vuejs', true);
 
@@ -83,8 +78,8 @@ class WP
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'action' => 'discoverPost',
                 'nonce' => wp_create_nonce($this->actionNonceName),
-                'postTypes' => $this->getAllCustomPostTypes(),
-                'posts' => $this->batchDiscovery(['post']),
+                'postTypes' => Data::getAllCustomPostTypes(),
+                'posts' => (new Data)->batchDiscovery(['post']),
             ]);
             wp_enqueue_script('wwdac-vuejs');
 
@@ -104,106 +99,33 @@ class WP
 
     public function singleDiscovery()
     {
-        if (!wp_verify_nonce($_REQUEST['nonce'], $this->actionNonceName)) {
-            exit('This is not allowed to do');
-        }
+        Helper::checkNonce($this->actionNonceName);
 
         $postId = $_REQUEST['postId'];
+        $data = (new Data())->singleDiscovery($postId);
 
-        $discovery = new Discovery($postId, true);
-        if(!$discovery) {
-            echo [];
-            wp_die();
-        }
-
-        echo json_encode($this->ajaxDataResponse($discovery->getUnusedData(), $discovery->getPostObject()));
-        wp_die();
+        Helper::returnAjaxData($data);
     }
 
     public function batchDiscoveryRequest()
     {
-        if (!wp_verify_nonce($_REQUEST['nonce'], $this->actionNonceName)) {
-            exit('This is not allowed to do');
-        }
+        Helper::checkNonce($this->actionNonceName);
 
         $postType = $_REQUEST['postType'];
         $paged = $_REQUEST['paged'];
+        $batchData = (new Data())->batchDiscovery($postType, $paged, true);
 
-        echo json_encode($batchData = $this->batchDiscovery($postType, $paged, true));
-        wp_die();
+        Helper::returnAjaxData($batchData);
     }
 
     public function batchCleanupRequest()
     {
-        if (!wp_verify_nonce($_REQUEST['nonce'], $this->actionNonceName)) {
-            exit('This is not allowed to do');
-        }
+        Helper::checkNonce($this->actionNonceName);
 
         $postType = $_REQUEST['postType'];
         $paged = $_REQUEST['paged'];
+        $batchData = (new Data())->batchDiscovery($postType, $paged, true); // TODO: change this
 
-        echo json_encode($this->batchDiscovery($postType, $paged, true)); // TODO: change this
-        wp_die();
-    }
-
-    public function batchDiscovery($postType = [], $paged = 1, $isDry = true)
-    {
-        $data = [];
-        $chunk = $this->getChunkedPosts($postType, $paged);
-
-        foreach ($chunk['postIds'] as $postId) {
-            $discovery = new Discovery($postId, $isDry);
-            $response = $this->ajaxDataResponse($discovery->getUnusedData(), $discovery->getPostObject());
-            array_push($data, $response);
-        }
-
-        $chunk['data'] = $data;
-        return $chunk;
-    }
-
-    private function getChunkedPosts($postType = [], int $paged = 1)
-    {
-        if(empty($postType)) {
-            $postType = array_keys($this->getAllCustomPostTypes());
-        }
-
-        $the_query = new \WP_Query([
-            'post_type' => $postType,
-            'posts_per_page' => 5,
-            'fields' => 'ids',
-            'paged' => $paged,
-        ]);
-
-        return [
-            'postIds' => $the_query->posts,
-            'foundPosts' => $the_query->found_posts,
-            'currentPage' => $paged,
-            'totalPage' => $the_query->max_num_pages,
-            'nextPage' => $paged < $the_query->max_num_pages ? $paged + 1 : false,
-        ];
-    }
-
-    private function getAllCustomPostTypes()
-    {
-        $cpts = get_post_types([
-            'public'   => true,
-            '_builtin' => false
-        ], 'object');
-
-        return array_column($cpts, 'label', 'name');
-    }
-
-    private function ajaxDataResponse($unusedData, $post)
-    {
-        return [
-            //'dataset' => $unusedData,
-            'amount' => sizeof($unusedData),
-            'post' => [
-                'id' => $post->ID,
-                'name' => $post->post_title,
-                'permalink' => get_permalink($post->ID),
-                'postType' => $post->post_type,
-            ]
-        ];
+        Helper::returnAjaxData($batchData);
     }
 }

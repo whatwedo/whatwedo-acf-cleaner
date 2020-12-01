@@ -11,11 +11,35 @@ namespace whatwedo\AcfCleaner;
 
 class Helper
 {
-    /*
-        Get basic comment data
-     */
-
-    public static function test($comment_id)
+    public static function ajaxDataResponse($unusedData, $post)
     {
+        return [
+            //'dataset' => $unusedData,
+            'amount' => sizeof($unusedData),
+            'post' => [
+                'id' => $post->ID,
+                'name' => $post->post_title,
+                'permalink' => get_permalink($post->ID),
+                'postType' => $post->post_type,
+            ]
+        ];
+    }
+
+    public static function returnAjaxData(array $data)
+    {
+        if(!$data) {
+            echo [];
+            wp_die();
+        }
+
+        echo json_encode($data);
+        wp_die();
+    }
+
+    public static function checkNonce($action)
+    {
+        if (!wp_verify_nonce($_REQUEST['nonce'], $action)) {
+            exit('This is not allowed to do');
+        }
     }
 }
