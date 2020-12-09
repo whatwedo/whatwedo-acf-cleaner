@@ -34,7 +34,14 @@ export default {
     },
     watch: {
         batchPaged: function() {
-            this.callBatchApi('action=' + this.inProgressAction + '&nonce=' + wwdacData.nonce + '&postType=[post]&paged=' + this.batchPaged) // TODO
+            const postType = Object.assign({}, this.$root.shared.selectedPostTypes);
+            const params = {
+                'action': this.inProgressAction,
+                'nonce': wwdacData.nonce,
+                'postType': Object.values(postType).join(','),
+                'paged': this.batchPaged,
+            };
+            this.callBatchApi(new URLSearchParams(params).toString())
                 .then(data => {
                     this.progress.totalPage = data.totalPage;
                     this.progress.currentPage = data.currentPage;
@@ -112,6 +119,8 @@ export default {
             });
         },
         callBatchApi(params) {
+            //console.log(JSON.stringify(params));
+
             return fetch(wwdacData.ajaxurl, {
                 method: 'POST',
                 body: params,

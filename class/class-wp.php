@@ -71,6 +71,12 @@ class WP
     public function enqueueAdminAssets()
     {
         if (get_current_screen()->id === 'tools_page_wwd-acf-cleaner') {
+            /*
+            wp_deregister_style('buttons');
+            wp_deregister_style('list-tables');
+            wp_deregister_style('forms');
+            */
+
             wp_enqueue_script('vuejs', 'https://unpkg.com/vue@^3/dist/vue.global.prod.js');
             wp_register_script('wwdac-vuejs', WWDACFCLEANER_DIR_URL . 'assets/wwd-acf-cleaner.js', 'vuejs', true);
 
@@ -79,7 +85,7 @@ class WP
                 'action' => 'discoverPost',
                 'nonce' => wp_create_nonce($this->actionNonceName),
                 'postTypes' => Data::getAllCustomPostTypes(),
-                'posts' => (new Data)->batchDiscovery(['post']),
+                'posts' => (new Data)->batchDiscovery(['post', 'page']),
             ]);
             wp_enqueue_script('wwdac-vuejs');
 
@@ -111,7 +117,7 @@ class WP
     {
         Helper::checkNonce($this->actionNonceName);
 
-        $postType = $_REQUEST['postType'];
+        $postType = explode(',', $_REQUEST['postType']);
         $paged = $_REQUEST['paged'];
         $batchData = (new Data())->batchDiscovery($postType, $paged, true);
 
@@ -122,7 +128,7 @@ class WP
     {
         Helper::checkNonce($this->actionNonceName);
 
-        $postType = $_REQUEST['postType'];
+        $postType = explode(',', $_REQUEST['postType']);
         $paged = $_REQUEST['paged'];
         $batchData = (new Data())->batchDiscovery($postType, $paged, true); // TODO: change this
 

@@ -3,41 +3,38 @@
  */
 
 import Actions from './components/Actions.js';
+import Selection from './components/Selection.js';
 
 const { createApp } = Vue;
 
+const shared = {
+    selectedPostTypes: [],
+    /*
+    mySharedMethod(){
+        //do shared stuff
+    }
+    */
+};
 const app = createApp({
     el: '#wwdac-app',
-    /*
-    delimiters: ['[[', ']]'],
-    render() {
-        return h(ManagementApp)
-    },
-    */
     components: {
         'actions': Actions,
+        'selection': Selection,
     },
     template: `
         <div class="container mx-auto p-4">
             <h2 class="text-2xl mb-2">{{ title }}</h2>
             
-            <!--
-            <ul>
-                <li :data-type="key" v-for="(postType, key) in postTypes">{{ postType }}</li>
-            </ul>
-            -->
-                        
+            <p>Select the post type you want to clean:</p>
+            <selection></selection>            
             <actions></actions>
         </div>
     `,
     data() {
         return {
-            postTypes: wwdacData.postTypes,
             title: 'ACF Cleaner by whatwedo',
+            shared
         }
-    },
-    created() {
-        //this.postTypes = wwdacData.postTypes;
     },
 });
 

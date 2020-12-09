@@ -60,13 +60,22 @@ class Data
         ];
     }
 
-    public static function getAllCustomPostTypes()
+    public static function getAllCustomPostTypes($addCount = true)
     {
         $cpts = get_post_types([
             'public'   => true,
-            '_builtin' => false
         ], 'object');
 
-        return array_column($cpts, 'label', 'name');
+        $cpts = array_column($cpts, 'label', 'name');
+        asort($cpts);
+
+        if($addCount) {
+            foreach ($cpts as $cpt => $name) {
+                $amount = (array) wp_count_posts($cpt);
+                $cpts[$cpt] = $name . ' (' . array_sum($amount) . ' posts)';
+            }
+        }
+
+        return $cpts;
     }
 }
