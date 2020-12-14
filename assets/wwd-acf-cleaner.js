@@ -42,5 +42,5 @@ const app = createApp({
 if('noModule' in HTMLScriptElement.prototype && window.fetch) {
     app.mount('#wwdac-app');
 } else {
-    document.getElementById('wwdac-app').innerHTML = 'Wir gehen davon aus dass Entwickler die dieses Backend verwenden einen aktuellen Browser haben und nuten somit neuste Technologien.';
+    document.getElementById('wwdac-app').innerHTML = 'Wir gehen davon aus, dass Entwickler die dieses Backend verwenden, einen aktuellen Browser haben und nutzen somit neuste Technologien.';
 }
