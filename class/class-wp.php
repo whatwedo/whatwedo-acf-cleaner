@@ -130,7 +130,7 @@ class WP
 
         $postType = explode(',', $_REQUEST['postType']);
         $paged = $_REQUEST['paged'];
-        $batchData = (new Data())->batchDiscovery($postType, $paged, true); // TODO: change this
+        $batchData = (new Data())->batchDiscovery($postType, $paged, false);
 
         Helper::returnAjaxData($batchData);
     }

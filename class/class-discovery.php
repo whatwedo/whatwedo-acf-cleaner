@@ -45,13 +45,10 @@ class Discovery
     public function cleanAcfUnusedData()
     {
         $unusedData = $this->unusedData;
-        print_r($unusedData);
 
-        /*
-        if(!$isDry) {
-            $this->deleteMetadata($postId, $unusedData);
+        if(!$this->isDry) {
+            $this->deleteMetadata($this->postId, $unusedData);
         }
-        */
 
         return $unusedData;
     }
