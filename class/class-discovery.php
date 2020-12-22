@@ -92,6 +92,9 @@ class Discovery
     }
 
     private function field_pluck($array, $key) {
+        if(!is_array($array)) {
+            return [];
+        }
 
         /* TODO: get fieldname as key on all fields - repeater, flexible */
         return array_map(function($v) use ($key) {
