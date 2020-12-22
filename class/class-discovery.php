@@ -27,6 +27,8 @@ class Discovery
         }
 
         add_action('init', [$this, 'getUnusedData']);
+
+        $this->cleanAcfUnusedData();
     }
 
     public function getPostObject()
@@ -38,19 +40,24 @@ class Discovery
 
     public function getUnusedData()
     {
-        $this->unusedData = $this->checkMetadataUsage($this->postId);
+        if(empty($this->unusedData)) {
+            $this->unusedData = $this->checkMetadataUsage($this->postId);
+        }
+
         return $this->unusedData;
     }
 
     public function cleanAcfUnusedData()
     {
-        $unusedData = $this->unusedData;
+        $this->getUnusedData(); // make sure data are loaded
 
-        if(!$this->isDry) {
-            $this->deleteMetadata($this->postId, $unusedData);
+        if($this->isDry) {
+            return $this->unusedData;
         }
 
-        return $unusedData;
+        $unusedData = unserialize(serialize($this->unusedData)); // Hacky: create a copy
+        $this->deleteMetadata($this->postId, $unusedData);
+        return $this->unusedData;
     }
 
     protected function getStoredMetadataKeys($postId)
