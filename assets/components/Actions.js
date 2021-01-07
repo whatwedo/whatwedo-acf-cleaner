@@ -8,10 +8,15 @@ export default {
         <div>
             <progress-item v-if="inProgressAction" :total="progress.totalPage" :current="progress.currentPage"></progress-item>
             <p class="mb-2">{{ progress.discoveredFields }} discovered fields within {{ progress.progressedPosts }} posts</p>
-        
-            <button class="bg-blue-600 text-white rounded-md p-2 mr-2" :disabled="inProgress" @click="triggerBatchDiscovery">Batch Discovery</button>
-            <button class="bg-red-600 text-white rounded-md p-2 mr-2" :disabled="inProgress" @click="triggerBatchCleanup">Batch Cleanup (DANGER)</button>
+                
+            <button class="hover:bg-blue-800 bg-blue-600 text-white rounded-md p-2 mr-2" :style="disabledStyle" :disabled="isDisabled" @click="triggerBatchDiscovery">Batch Discovery</button>
+            <button class="hover:bg-red-800 bg-red-600 text-white rounded-md p-2 mr-2" :style="disabledStyle" :disabled="isDisabled" @click="triggerBatchCleanup">Batch Cleanup (DANGER)</button>
             <button class="text-black border border-black rounded-md p-2 mr-2" v-if="inProgress" @click="triggerCancel">Cancel</button>
+            <style>
+                button:disabled {
+                  opacity: .5;
+                }
+            </style>
         </div>
     `,
     data() {
@@ -24,7 +29,7 @@ export default {
                 discoveredFields: 0,
                 totalPage: 0,
                 currentPage: 0,
-            },
+            }
         }
     },
     watch: {
@@ -71,7 +76,22 @@ export default {
     computed: {
         inProgress: function() {
             return !!this.inProgressAction;
-        }
+        },
+        hasPostTypes: function() {
+            return this.$root.shared.selectedPostTypes.length;
+        },
+        isDisabled: function() {
+            return this.inProgress || !this.hasPostTypes;
+        },
+        disabledStyle: function() {
+            /* Tailwind does not support disabled styling from CDN */
+            if(this.isDisabled) {
+                return {
+                    opacity: '0.5',
+                }
+            }
+            return false;
+        },
     },
     methods: {
         triggerCleanup() {
