@@ -9,11 +9,6 @@ const { createApp } = Vue;
 
 const shared = {
     selectedPostTypes: [],
-    /*
-    mySharedMethod(){
-        //do shared stuff
-    }
-    */
 };
 const app = createApp({
     el: '#wwdac-app',

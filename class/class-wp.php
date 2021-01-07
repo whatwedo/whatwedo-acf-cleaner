@@ -17,12 +17,10 @@ class WP
     {
         add_action('admin_menu', [$this, 'addAdminMenu']);
 
-        // add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_script' ) );
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdminAssets']);
         add_filter('script_loader_tag', [$this, 'addScriptAttribute'], 10, 3);
 
         add_action('wp_ajax_singleDiscovery', [$this, 'singleDiscovery']);
-        //add_action('wp_ajax_cleanPost', [$this, 'cleanPost']);
         add_action('wp_ajax_batchDiscovery', [$this, 'batchDiscoveryRequest']);
         add_action('wp_ajax_batchCleanup', [$this, 'batchCleanupRequest']);
     }
@@ -44,23 +42,11 @@ class WP
         echo '<div id="wwdac-app"></div>';
 
         /*
+        // Test hardcoded post on server side
         $postId = 2832;
         $isDry = true;
         $discovery = new Discovery($postId, $isDry);
         print_r($discovery->getUnusedData());
-        */
-
-        /*
-        $posts = QueryHelper::getBlogPosts(5);
-
-        foreach ($posts as $post) {
-            $discovery = new Discovery($post->getId(), true);
-
-            echo '<h3>' . $post->getTitle() . ' (ID: ' . $post->getId() . ')</h3>';
-            $unusedData = $discovery->getUnusedData();
-            print_r($unusedData);
-            echo 'Unused datasets: ' . sizeof($unusedData);
-        }
         */
     }
 
@@ -71,12 +57,6 @@ class WP
     public function enqueueAdminAssets()
     {
         if (get_current_screen()->id === 'tools_page_wwd-acf-cleaner') {
-            /*
-            wp_deregister_style('buttons');
-            wp_deregister_style('list-tables');
-            wp_deregister_style('forms');
-            */
-
             wp_enqueue_script('vuejs', 'https://unpkg.com/vue@^3/dist/vue.global.prod.js');
             wp_register_script('wwdac-vuejs', WWDACFCLEANER_DIR_URL . 'assets/wwd-acf-cleaner.js', 'vuejs', true);
 
