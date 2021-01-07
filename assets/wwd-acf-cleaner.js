@@ -22,7 +22,7 @@ const app = createApp({
         'selection': Selection,
     },
     template: `
-        <div class="container mx-auto p-4">
+        <div class="container p-4">
             <h2 class="text-2xl mb-2">{{ title }}</h2>
             
             <p>Select the post type you want to clean:</p>
