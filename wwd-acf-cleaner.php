@@ -3,7 +3,7 @@
 namespace whatwedo\AcfCleaner;
 
 /*
-    Plugin Name: Whatwedo ACF Cleaner
+    Plugin Name: whatwedo ACF Cleaner
     Description: Removes unused ACF meta data from the database
     Version: 1.0.0
     Author: whatwedo
