@@ -14,7 +14,6 @@ class Helper
     public static function ajaxDataResponse($unusedData, $post)
     {
         return [
-            //'dataset' => $unusedData,
             'amount' => sizeof($unusedData),
             'post' => [
                 'id' => $post->ID,

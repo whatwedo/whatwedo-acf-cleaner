@@ -50,5 +50,4 @@ spl_autoload_register(function ($class) {
  * Init Classes
  */
 
-new Bootstrap();
 new WP();
