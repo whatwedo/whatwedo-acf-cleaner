@@ -57,7 +57,7 @@ class WP
     public function enqueueAdminAssets()
     {
         if (get_current_screen()->id === 'tools_page_wwd-acf-cleaner') {
-            wp_enqueue_script('vuejs', WWDACFCLEANER_DIR_URL . 'assets/vendors/vue.global.prod.js');
+            wp_enqueue_script('vuejs', WWDACFCLEANER_DIR_URL . 'assets/vendors/vue.global.prod.js', [], true);
             wp_register_script('wwdac-vuejs', WWDACFCLEANER_DIR_URL . 'assets/wwd-acf-cleaner.js', 'vuejs', true);
 
             wp_localize_script('wwdac-vuejs', 'wwdacData', [
@@ -69,7 +69,7 @@ class WP
             ]);
             wp_enqueue_script('wwdac-vuejs');
 
-            wp_enqueue_style('tailwind-css', WWDACFCLEANER_DIR_URL . 'assets/vendors/tailwind.min.css');
+            wp_enqueue_style('tailwind-css', WWDACFCLEANER_DIR_URL . 'assets/vendors/tailwind.min.css', [], true);
         }
     }
 
