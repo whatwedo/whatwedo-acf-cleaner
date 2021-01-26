@@ -87,7 +87,7 @@ class WP
     {
         Helper::checkNonce($this->actionNonceName);
 
-        $postId = $_REQUEST['postId'];
+        $postId = (int) $_POST['postId'];
         $data = (new Data())->singleDiscovery($postId);
 
         Helper::returnAjaxData($data);
@@ -97,8 +97,8 @@ class WP
     {
         Helper::checkNonce($this->actionNonceName);
 
-        $postType = explode(',', $_REQUEST['postType']);
-        $paged = $_REQUEST['paged'];
+        $postType = (array) explode(',', $_POST['postType']);
+        $paged = (int) $_POST['paged'];
         $batchData = (new Data())->batchDiscovery($postType, $paged, true);
 
         Helper::returnAjaxData($batchData);
@@ -108,8 +108,8 @@ class WP
     {
         Helper::checkNonce($this->actionNonceName);
 
-        $postType = explode(',', $_REQUEST['postType']);
-        $paged = $_REQUEST['paged'];
+        $postType = explode(',', $_POST['postType']);
+        $paged = (int) $_POST['paged'];
         $batchData = (new Data())->batchDiscovery($postType, $paged, false);
 
         Helper::returnAjaxData($batchData);
