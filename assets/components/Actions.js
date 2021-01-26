@@ -85,7 +85,7 @@ export default {
             return this.inProgress || !this.hasPostTypes;
         },
         disabledStyle: function() {
-            /* Tailwind does not support disabled styling from CDN */
+            /* Tailwind does not support disabled styling from precompiled build (CDN) */
             if(this.isDisabled) {
                 return {
                     opacity: '0.5',
