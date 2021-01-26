@@ -9,7 +9,7 @@ const { createApp } = Vue;
 
 const shared = {
     selectedPostTypes: [],
-    isProcessRunning: false,
+    inProgress: false,
 };
 const app = createApp({
     el: '#wwdac-app',
@@ -21,7 +21,7 @@ const app = createApp({
         <div class="container p-4">
             <h2 class="text-2xl mb-2">{{ title }}</h2>
 
-            <selection v-if="!shared.isProcessRunning"></selection>
+            <selection v-if="!shared.inProgress"></selection>
             <actions></actions>
         </div>
     `,

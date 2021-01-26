@@ -72,12 +72,10 @@ export default {
                 this.resetValues();
             }
         },
-        isDisabled: function() {
-            this.$root.shared.isProcessRunning = this.isDisabled;
-        }
     },
     computed: {
         inProgress: function() {
+            this.$root.shared.inProgress = !!this.inProgressAction;
             return !!this.inProgressAction;
         },
         hasPostTypes: function() {
