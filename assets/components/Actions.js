@@ -8,7 +8,7 @@ export default {
         <div>
             <progress-item v-if="inProgressAction" :total="progress.totalPage" :current="progress.currentPage"></progress-item>
             <p class="mb-2">{{ progress.discoveredFields }} discovered fields within {{ progress.progressedPosts }} posts</p>
-                
+
             <button class="hover:bg-blue-800 bg-blue-600 text-white rounded-md p-2 mr-2" :style="disabledStyle" :disabled="isDisabled" @click="triggerBatchDiscovery">Batch Discovery</button>
             <button class="hover:bg-red-800 bg-red-600 text-white rounded-md p-2 mr-2" :style="disabledStyle" :disabled="isDisabled" @click="triggerBatchCleanup">Batch Cleanup (DANGER)</button>
             <button class="text-black border border-black rounded-md p-2 mr-2" v-if="inProgress" @click="triggerCancel">Cancel</button>
@@ -72,6 +72,9 @@ export default {
                 this.resetValues();
             }
         },
+        isDisabled: function() {
+            this.$root.shared.isProcessRunning = this.isDisabled;
+        }
     },
     computed: {
         inProgress: function() {
