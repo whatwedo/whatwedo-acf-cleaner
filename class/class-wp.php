@@ -78,7 +78,7 @@ class WP
         if ('wwdac-vuejs' !== $handle) {
             return $tag;
         }
-        $tag = '<script type="module" src="' . esc_url($src) . '"></script>';
+        $tag = str_replace(' src', ' type="module" src', $tag);
 
         return $tag;
     }
@@ -108,7 +108,7 @@ class WP
     {
         Helper::checkNonce($this->actionNonceName);
 
-        $postType = explode(',', $_POST['postType']);
+        $postType = (array) explode(',', $_POST['postType']);
         $paged = (int) $_POST['paged'];
         $batchData = (new Data())->batchDiscovery($postType, $paged, false);
 
