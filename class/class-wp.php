@@ -97,9 +97,8 @@ class WP
     {
         Helper::checkNonce($this->actionNonceName);
 
-        $postType = (array) explode(',', $_POST['postType']);
-        $paged = (int) $_POST['paged'];
-        $batchData = (new Data())->batchDiscovery($postType, $paged, true);
+        $params = $this->checkParams();
+        $batchData = (new Data())->batchDiscovery($params['postType'], $params['paged'], true);
 
         Helper::returnAjaxData($batchData);
     }
@@ -108,10 +107,25 @@ class WP
     {
         Helper::checkNonce($this->actionNonceName);
 
-        $postType = (array) explode(',', $_POST['postType']);
-        $paged = (int) $_POST['paged'];
-        $batchData = (new Data())->batchDiscovery($postType, $paged, false);
+        $params = $this->checkParams();
+        $batchData = (new Data())->batchDiscovery($params['postType'], $params['paged'], false);
 
         Helper::returnAjaxData($batchData);
+    }
+
+    private function checkParams()
+    {
+        $postType = array_map('sanitize_text_field', explode(',', $_POST['postType']));
+        foreach ($postType as $singlePostType) {
+            if (!post_type_exists($singlePostType)) {
+                unset($postType[$singlePostType]);
+            }
+        }
+        $paged = (int) $_POST['paged'];
+
+        return [
+            'postType' => $postType,
+            'paged' => $paged,
+        ];
     }
 }
