@@ -17,6 +17,11 @@ class WP
     {
         add_action('admin_menu', [$this, 'addAdminMenu']);
 
+        if (!function_exists('get_field')) {
+            add_action('admin_notices', [$this, 'sample_admin_notice__error']);
+            return; // stop when ACF isn't active
+        }
+
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdminAssets']);
         add_filter('script_loader_tag', [$this, 'addScriptAttribute'], 10, 3);
 
@@ -28,7 +33,14 @@ class WP
         add_action('add_meta_boxes', [$this, 'registerCleanerMetabox']);
     }
 
-	function registerCleanerMetabox() {
+    public function sample_admin_notice__error() {
+        $class = 'notice notice-error';
+        $message = 'Warning: You need to Activate Advanced Custom Fields in order to use whatwedo ACF Cleaner.';
+
+        printf('<div class="%1$s"><p>%2$s</p></div>', esc_attr($class), esc_html($message));
+    }
+
+	public function registerCleanerMetabox() {
 		global $post;
 
         if(!current_user_can('manage_options')) {
