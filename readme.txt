@@ -51,9 +51,10 @@ Check out the [GitHub repository](https://github.com/whatwedo/whatwedo-acf-clean
 
 == Changelog ==
 
-= 1.0.0 (2020-02-22) =
-* First release
-= 1.1.0 (2022-06-22) =
+= 1.1.0 (2022-07-14) =
 * Add single post metabox with detailed info for unused fields (thanks to [TrilipuT](https://github.com/TrilipuT))
 * More precise unused fields detection added (thanks to [TrilipuT](https://github.com/TrilipuT))
 * Add check if Advanced Custom Fields is installed (thanks to [sebastian_a](https://profiles.wordpress.org/sebastian_a/)) for reporting it
+
+= 1.0.0 (2020-02-22) =
+* First release
