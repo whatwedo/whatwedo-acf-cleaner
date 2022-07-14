@@ -70,9 +70,17 @@ class Discovery
 
     protected function getUsedFieldKeys($postId)
     {
-        $blueprints = get_field_objects($postId);
-        $blueprintKeys = $this->field_pluck($blueprints, 'key');
-        return $this->array_flatten($blueprintKeys);
+	    $groups = acf_get_field_groups(['post_id' => $postId]);
+	    $blueprints = [];
+	    foreach ($groups as $group) {
+		    $fields = acf_get_fields($group['key']);
+		    foreach ($fields as $field) {
+			    $blueprints[$field['name']] = $field;
+		    }
+	    }
+	    $blueprintKeys = $this->field_pluck($blueprints, 'key');
+
+	    return $this->array_flatten($blueprintKeys);
     }
 
     protected function checkMetadataUsage($postId)
@@ -86,8 +94,10 @@ class Discovery
     protected function deleteMetadata($postId, $unusedData)
     {
         foreach ($unusedData as $name => $key) {
+	        $name = trim($name,'_');
+
             acf_delete_metadata($postId, $name, false);
-            acf_delete_metadata($postId, '_' . $name, true);
+            acf_delete_metadata($postId, $name, true);
         }
     }
 
