@@ -23,7 +23,69 @@ class WP
         add_action('wp_ajax_singleDiscovery', [$this, 'singleDiscovery']);
         add_action('wp_ajax_batchDiscovery', [$this, 'batchDiscoveryRequest']);
         add_action('wp_ajax_batchCleanup', [$this, 'batchCleanupRequest']);
+        add_action('wp_ajax_singleCleanup', [$this, 'singleCleanupRequest']);
+
+        add_action('add_meta_boxes', [$this, 'registerCleanerMetabox']);
     }
+
+	function registerCleanerMetabox() {
+		global $post;
+
+        if(!current_user_can('manage_options')) {
+            return;
+        }
+
+		/* TODO: move this to ajax call on-demand. */
+		$discovery = new Discovery($post->ID, true);
+		$unused = $discovery->getUnusedData();
+		if ($unused) {
+			add_meta_box('unused-acf-fields', 'Unused ACF Fields', function() use ($post, $unused) {
+                echo $this->cleanerMetaboxContent($post->ID, $unused);
+            });
+		}
+	}
+
+	public function cleanerMetaboxContent($postId, $unused) {
+        $content = '<div id="acf_cleanup_data">';
+		    foreach ($unused as $name => $key) {
+			    $field = trim($name, '_');
+			    $value = get_field($field, $postId);
+			    $value = is_array($value) ? var_export($value, true) : print_r($value, true);
+			    $escaped_value = esc_html($value);
+                $content .= <<<EOD
+                    <div class="acf_cleanup_list" style="display: flex; flex-direction: row; margin-bottom: 0.5rem;">
+                        <span style="width: 25%; margin-right: 0.5rem; margin-top: 4px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;" data-key="$key" title="$field">$field</span>
+                        <input style="height: 2em; flex-grow: 1" disabled value="$escaped_value">
+                    </div>
+                EOD;
+            }
+            $content .= '<button class="button secondary" id="acf_cleanup_action">Clean data</button>';
+            $content .= <<<EOD
+                <script>jQuery('#acf_cleanup_action').on('click', function(e){
+                    e.preventDefault();
+                    jQuery(e.currentTarget).addClass('disabled')
+                    if(confirm('Are you sure?')){
+                        wp.ajax.send('singleCleanup', {
+                            data: { postId: $postId },
+                            success: function(response) {
+                                jQuery('#acf_cleanup_data').empty().html('Success!<br>Removed ' + response.count + ' fields');
+                                jQuery(e.currentTarget).removeClass('disabled');
+                            },
+                            error: function(response) {
+                                alert(response)
+                                jQuery(e.currentTarget).removeClass('disabled');
+                            }
+                        })
+                    } else {
+                        jQuery(e.currentTarget).removeClass('disabled');
+                    }
+                    })
+                </script>
+            EOD;
+        $content .= '</div>';
+
+        return $content;
+	}
 
     public function addAdminMenu()
     {
@@ -49,10 +111,6 @@ class WP
         print_r($discovery->getUnusedData());
         */
     }
-
-    /*
-        Enqueue admin script
-     */
 
     public function enqueueAdminAssets()
     {
@@ -112,6 +170,20 @@ class WP
 
         Helper::returnAjaxData($batchData);
     }
+
+	public function singleCleanupRequest()
+	{
+		$postId = $_POST['postId'];
+		$isDry = false;
+		$discovery = new Discovery( $postId, $isDry );
+
+		$count = count($discovery->cleanAcfUnusedData());
+		if ($count) {
+			wp_send_json_success(['count' => count($discovery->cleanAcfUnusedData())]);
+		}
+
+		wp_send_json_error( 'Someting went wrong...' );
+	}
 
     private function checkParams()
     {
