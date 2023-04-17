@@ -63,7 +63,7 @@ class Data
     public static function getAllCustomPostTypes($addCount = true)
     {
         $cpts = get_post_types([
-            'public'   => true,
+            'show_ui' => true,
         ], 'object');
 
         $cpts = array_column($cpts, 'label', 'name');
