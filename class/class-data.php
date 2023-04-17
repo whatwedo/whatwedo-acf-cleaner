@@ -66,6 +66,9 @@ class Data
             'show_ui' => true,
         ], 'object');
 
+        // Removes some build-in CPT which are not relevant
+        unset($cpts['acf-field-group'], $cpts['attachment'], $cpts['wp_navigation'], $cpts['wp_block']);
+
         $cpts = array_column($cpts, 'label', 'name');
         asort($cpts);
 
