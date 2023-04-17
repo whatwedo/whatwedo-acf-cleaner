@@ -40,6 +40,10 @@ Conditional fields are not taken in account at this point. This is probably also
 We are aware that it would be handy to know which exact fields will get deleted, so the user can analyzing the actual data. This could be integrated in a future release.
 We already know the name of the fields and we're also returning them from the server. Since they're a lot of unordered data, we don't do something proper with those in the frontend .
 
+= Support more than just post meta =
+ACF allows fields for term meta, user meta etc and not just post meta. This plugin only works with post meta for now.
+There's a ticket in the WordPress Support page for this: https://wordpress.org/support/topic/support-more-than-just-post-meta/. We're happy to accept pull requests.
+
 == Contribute ==
 
 Developed with ♥ by [whatwedo](https://whatwedo.ch) in Bern.
