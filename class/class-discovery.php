@@ -22,7 +22,7 @@ class Discovery
 
         $post = $this->getPostObject();
 
-        if(!$post) {
+        if (!$post) {
             return false;
         }
 
@@ -34,13 +34,13 @@ class Discovery
     public function getPostObject()
     {
         $post = get_post($this->postId);
-        if(!$post) return false;
+        if (!$post) return false;
         return $post;
     }
 
     public function getUnusedData()
     {
-        if(empty($this->unusedData)) {
+        if (empty($this->unusedData)) {
             $this->unusedData = $this->checkMetadataUsage($this->postId);
         }
 
@@ -51,7 +51,7 @@ class Discovery
     {
         $this->getUnusedData(); // make sure data are loaded
 
-        if($this->isDry) {
+        if ($this->isDry) {
             return $this->unusedData;
         }
 
@@ -63,7 +63,7 @@ class Discovery
     protected function getStoredMetadataKeys($postId)
     {
         $data = acf_get_meta($postId);
-        return array_filter($data, function($key) {
+        return array_filter($data, function ($key) {
             return strpos($key, '_') === 0 ? true : false;
         }, ARRAY_FILTER_USE_KEY);
     }
@@ -131,12 +131,12 @@ class Discovery
         if (!is_array($array)) {
             return false;
         }
-        $result = array();
+        $result = [];
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 $result = array_merge($result, $this->array_flatten($value));
             } else {
-                $result = array_merge($result, array($key => $value));
+                $result = array_merge($result, [$key => $value]);
             }
         }
         return $result;
