@@ -70,25 +70,72 @@ class Discovery
 
     protected function getUsedFieldKeys($postId)
     {
-	    $groups = acf_get_field_groups(['post_id' => $postId]);
-	    $blueprints = [];
-	    foreach ($groups as $group) {
-		    $fields = acf_get_fields($group['key']);
-		    foreach ($fields as $field) {
-			    $blueprints[$field['name']] = $field;
-		    }
-	    }
-	    $blueprintKeys = $this->field_pluck($blueprints, 'key');
+        $groups = acf_get_field_groups(['post_id' => $postId]);
+        $blueprints = [];
+        $neutralKeys = [];
+        foreach ($groups as $group) {
+            $fields = acf_get_fields($group['key']);
 
-	    return $this->array_flatten($blueprintKeys);
+            foreach ($fields as $field) {
+                $blueprints[$field['name']] = $field;
+
+                if($field['_clone']) {
+                    $neutralKeys[] = $field['_clone'];
+                }
+
+                if($field['type'] === 'repeater' || $field['type'] === 'flexible_content') {
+                    $neutralKeys[] = $field['key'];
+
+                    // Strange second key - but needed for some fields
+                    if($field['__key']) {
+                        $neutralKeys[] = $field['__key'];
+                    }
+                }
+            }
+        }
+
+        $blueprintKeys = $this->field_pluck($blueprints, 'key');
+        $flattenBlueprintKeys = $this->array_flatten($blueprintKeys);
+        $flattenBlueprintKeys['wwdacfcleaner_clone'] = $neutralKeys;
+
+        return $flattenBlueprintKeys;
+    }
+
+    protected function getUnusedKeys($postId)
+    {
+        $allUsedKeys = $this->combineKeys($this->getUsedFieldKeys($postId));
+        $savedKeys = $this->combineKeys($this->getStoredMetadataKeys($postId));
+
+        return array_filter($savedKeys, function ($key) use ($allUsedKeys) {
+            return in_array($key, $allUsedKeys) ? false : true;
+        });
     }
 
     protected function checkMetadataUsage($postId)
     {
-        $allUsedKeys = $this->getUsedFieldKeys($postId);
-        return array_filter($this->getStoredMetadataKeys($postId), function($key) use ($allUsedKeys) {
-            return in_array($key, $allUsedKeys) ? false : true;
-        });
+        $savedKeys = $this->getStoredMetadataKeys($postId);
+
+        $unusedData = [];
+        foreach ($this->getUnusedKeys($postId) as $key) {
+            $name = array_search($key, $savedKeys);
+            $unusedData[$name] = $key;
+        }
+
+        return $unusedData;
+    }
+
+    protected function combineKeys($array)
+    {
+        $flatArray = [];
+        foreach ($array as $value) {
+            if(is_array($value)) {
+                $flatArray = array_merge($flatArray, $value);
+            } else {
+                $flatArray[] = $value;
+            }
+        }
+
+        return $flatArray;
     }
 
     protected function deleteMetadata($postId, $unusedData)
