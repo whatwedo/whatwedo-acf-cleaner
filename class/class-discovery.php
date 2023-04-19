@@ -104,24 +104,16 @@ class Discovery
     protected function getUnusedKeys($postId)
     {
         $allUsedKeys = $this->combineKeys($this->getUsedFieldKeys($postId));
-        $savedKeys = $this->combineKeys($this->getStoredMetadataKeys($postId));
+        $savedKeys = $this->getStoredMetadataKeys($postId);
 
-        return array_filter($savedKeys, function ($key) use ($allUsedKeys) {
-            return in_array($key, $allUsedKeys) ? false : true;
-        });
+        return array_filter($savedKeys, function ($value) use ($allUsedKeys) {
+            return in_array($value, $allUsedKeys) ? false : true;
+        }, ARRAY_FILTER_USE_BOTH);
     }
 
     protected function checkMetadataUsage($postId)
     {
-        $savedKeys = $this->getStoredMetadataKeys($postId);
-
-        $unusedData = [];
-        foreach ($this->getUnusedKeys($postId) as $key) {
-            $name = array_search($key, $savedKeys);
-            $unusedData[$name] = $key;
-        }
-
-        return $unusedData;
+        return $this->getUnusedKeys($postId);
     }
 
     protected function combineKeys($array)
