@@ -174,7 +174,7 @@ class WP
 	{
 		$postId = $_POST['postId'];
 		$isDry = false;
-		$discovery = new Discovery( $postId, $isDry );
+		$discovery = new Discovery($postId, $isDry);
 
 		$count = count($discovery->cleanAcfUnusedData());
 		if ($count) {
