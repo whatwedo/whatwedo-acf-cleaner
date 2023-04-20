@@ -104,10 +104,15 @@ class WP
 
         /*
         // Test hardcoded post on server side
-        $postId = 2832;
+        $postId = 7303; // 41969; // 41240; // 40589;
         $isDry = true;
         $discovery = new Discovery($postId, $isDry);
-        print_r($discovery->getUnusedData());
+
+        foreach ($discovery->getUnusedData() as $name => $key) {
+            echo '<pre>';
+            print_r($name . ' (' . $key . ')');
+            echo '</pre>';
+        }
         */
     }
 
