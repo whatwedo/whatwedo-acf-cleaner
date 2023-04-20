@@ -51,12 +51,11 @@ class Discovery
     {
         $this->getUnusedData(); // make sure data are loaded
 
-        if ($this->isDry) {
-            return $this->unusedData;
+        if (!$this->isDry) {
+            $unusedData = unserialize(serialize($this->unusedData)); // Hacky: create a copy
+            $this->deleteMetadata($this->postId, $unusedData);
         }
 
-        $unusedData = unserialize(serialize($this->unusedData)); // Hacky: create a copy
-        $this->deleteMetadata($this->postId, $unusedData);
         return $this->unusedData;
     }
 
@@ -98,36 +97,17 @@ class Discovery
         $flattenBlueprintKeys = $this->array_flatten($blueprintKeys);
         $flattenBlueprintKeys['wwdacfcleaner_clone'] = $neutralKeys;
 
-        return $flattenBlueprintKeys;
+        return $this->combineKeys($flattenBlueprintKeys);
     }
 
-    protected function getUnusedKeys($postId)
+    protected function checkMetadataUsage($postId)
     {
-        $allUsedKeys = $this->combineKeys($this->getUsedFieldKeys($postId));
+        $allUsedKeys = $this->getUsedFieldKeys($postId);
         $savedKeys = $this->getStoredMetadataKeys($postId);
 
         return array_filter($savedKeys, function ($value) use ($allUsedKeys) {
             return in_array($value, $allUsedKeys) ? false : true;
         }, ARRAY_FILTER_USE_BOTH);
-    }
-
-    protected function checkMetadataUsage($postId)
-    {
-        return $this->getUnusedKeys($postId);
-    }
-
-    protected function combineKeys($array)
-    {
-        $flatArray = [];
-        foreach ($array as $value) {
-            if(is_array($value)) {
-                $flatArray = array_merge($flatArray, $value);
-            } else {
-                $flatArray[] = $value;
-            }
-        }
-
-        return $flatArray;
     }
 
     protected function deleteMetadata($postId, $unusedData)
@@ -179,5 +159,18 @@ class Discovery
             }
         }
         return $result;
+    }
+
+    private function combineKeys($array)
+    {
+        $flatArray = [];
+        foreach ($array as $value) {
+            if(is_array($value)) {
+                $flatArray = array_merge($flatArray, $value);
+            } else {
+                $flatArray[] = $value;
+            }
+        }
+        return $flatArray;
     }
 }
