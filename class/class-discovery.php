@@ -78,7 +78,7 @@ class Discovery
             foreach ($fields as $field) {
                 $blueprints[$field['name']] = $field;
 
-                if($field['_clone']) {
+                if(isset($field['_clone'])) {
                     $neutralKeys[] = $field['_clone'];
                 }
 
