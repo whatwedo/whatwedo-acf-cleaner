@@ -2,9 +2,9 @@
 Contributors:      whatwedo, marcwieland95, trilliput
 Tags:              admin, advanced custom fields, acf, cleanup, cleaner, metadata
 Requires at least: 5.5
-Tested up to:      6.2
+Tested up to:      6.2.2
 Requires PHP:      7.0
-Stable tag:        1.2.0
+Stable tag:        1.2.1
 License:           MIT
 License URI:       https://opensource.org/licenses/MIT
 
@@ -54,6 +54,9 @@ This plugin was initially created for our own usage to clean a big database from
 Check out the [GitHub repository](https://github.com/whatwedo/whatwedo-acf-cleaner) and submit pull requests or open issues
 
 == Changelog ==
+
+= 1.2.1 (2023-05-25) =
+* Prevent error when no clone field is used (thanks to [melcarthus](https://wordpress.org/support/topic/undefined-array-key-_clone/) for reporting)
 
 = 1.2.0 (2023-04-20) =
 * Find more orphans (repeater and clone fields)
