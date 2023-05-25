@@ -86,7 +86,7 @@ class Discovery
                     $neutralKeys[] = $field['key'];
 
                     // Strange second key - but needed for some fields
-                    if($field['__key']) {
+                    if(isset($field['__key'])) {
                         $neutralKeys[] = $field['__key'];
                     }
                 }
