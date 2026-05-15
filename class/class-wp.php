@@ -45,6 +45,7 @@ class WP
 	}
 
 	public function cleanerMetaboxContent($postId, $unused) {
+        $nonce = wp_create_nonce($this->actionNonceName);
         $content = '<div id="acf_cleanup_data">';
 		    foreach ($unused as $name => $key) {
 			    $field = trim($name, '_');
@@ -65,7 +66,7 @@ class WP
                     jQuery(e.currentTarget).addClass('disabled')
                     if(confirm('Are you sure?')){
                         wp.ajax.send('singleCleanup', {
-                            data: { postId: $postId },
+                            data: { postId: $postId, nonce: '$nonce' },
                             success: function(response) {
                                 jQuery('#acf_cleanup_data').empty().html('Success!<br>Removed ' + response.count + ' fields');
                                 jQuery(e.currentTarget).removeClass('disabled');
@@ -177,13 +178,19 @@ class WP
 
 	public function singleCleanupRequest()
 	{
-		$postId = $_POST['postId'];
+        Helper::checkNonce($this->actionNonceName);
+
+		$postId = (int) ($_POST['postId'] ?? 0);
+        if (!$postId) {
+            wp_send_json_error('Invalid post ID.');
+        }
+
 		$isDry = false;
 		$discovery = new Discovery($postId, $isDry);
 
 		$count = count($discovery->cleanAcfUnusedData());
 		if ($count) {
-			wp_send_json_success(['count' => count($discovery->cleanAcfUnusedData())]);
+			wp_send_json_success(['count' => $count]);
 		}
 
 		wp_send_json_error( 'Someting went wrong...' );
